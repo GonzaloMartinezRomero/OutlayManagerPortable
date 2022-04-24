@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutlayManagerPortable.MainPage"
+             Title="Outlay Manager Portable">
+
+    <ScrollView>
+        <StackLayout Orientation="Vertical">
+            <Grid Margin="5" >
+                <Label FontSize="Large" Text="Date" Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <DatePicker x:Name="DateSelector" DateSelected="DateSelectedChanged" Grid.Column="1" Grid.Row="0" HorizontalOptions="Start"/>
+            </Grid>
+            <Button Text="New" Margin="10" Clicked="AddNewTransaction"/>           
+
+            <ListView x:Name="TransactionListView"
+                      ItemTapped="ItemSelectedEvent"
+                      Margin="1">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>                                                               
+                                <Label Text="{Binding Type}" Grid.Row="0" Grid.Column="0"/>
+                                <Label Text="{Binding Code}" Grid.Row="0" Grid.Column="1"/>
+                                <Label Text="{Binding Amount}" Grid.Row="0" Grid.Column="2"/>
+                                <Label Text="{Binding Description}" Grid.Row="0" Grid.Column="3"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

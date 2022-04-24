@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32126.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlayManagerPortable.Android", "OutlayManagerPortable\OutlayManagerPortable.Android\OutlayManagerPortable.Android.csproj", "{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlayManagerPortable", "OutlayManagerPortable\OutlayManagerPortable\OutlayManagerPortable.csproj", "{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutlayManagerPortableAPI", "OutlayManagerPortableAPI\OutlayManagerPortableAPI.csproj", "{9D1D7D47-001D-404C-B3B2-22ABC1CC4D22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26FB6351-8540-4DB8-AFF7-C278BB9B3E04}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6D25C83-3D1C-4C6D-A3E2-6315AFC4A0F7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9D1D7D47-001D-404C-B3B2-22ABC1CC4D22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1D7D47-001D-404C-B3B2-22ABC1CC4D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1D7D47-001D-404C-B3B2-22ABC1CC4D22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1D7D47-001D-404C-B3B2-22ABC1CC4D22}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {794A3A67-DC01-46FF-8A2C-23D949B6BE35}
+	EndGlobalSection
+EndGlobal

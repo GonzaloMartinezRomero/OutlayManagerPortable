@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutlayManagerPortable.Views.TransactionPage"
+             Title="Transaction Outlay">
+    
+    <ContentPage.Content>
+        <StackLayout Spacing="3" Padding="15">
+            
+            <Label Text="Date" FontSize="Medium" />
+            <DatePicker x:Name="DatePicker" Date="{Binding Date}"/>
+
+            <Label Text="Type" FontSize="Medium" />
+            <Picker x:Name = "TransactionTypeSelector" SelectedItem="{Binding Type}"/>
+
+            <Label Text="Code" FontSize="Medium" />
+            <Picker x:Name = "TransactionCodeSelector" SelectedItem="{Binding Code}" />
+
+            <Label Text="Amount €" FontSize="Medium"/>
+            <Entry FontSize="Medium" Keyboard="Numeric" Text="{Binding Amount}"/>
+
+            <Label Text="Description" FontSize="Medium" />
+            <Entry FontSize="Medium" Keyboard="Text" Text="{Binding Description}"/>
+
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Delete" HorizontalOptions="CenterAndExpand" BackgroundColor="Red"></Button>
+                <Button x:Name="SaveButton" Text="Save" HorizontalOptions="CenterAndExpand" BackgroundColor="Green" Clicked="AddNewTransaction"></Button>
+            </StackLayout>
+            
+            <StackLayout>
+                <ActivityIndicator x:Name="ActivityIndicator" IsRunning="False" VerticalOptions="Center"></ActivityIndicator>
+            </StackLayout>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
