@@ -1,29 +1,62 @@
-﻿using OutlayManagerPortable.Services.Abstract;
+﻿using OutlayManagerPortable.DTO;
+using OutlayManagerPortable.Models;
+using OutlayManagerPortable.Services.Abstract;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace OutlayManagerPortable.ViewModels
 {
-    public class TransactionViewModel
+    internal class TransactionViewModel
     {
-        private ITransactionOutlayService _transactionOutlayService;
+        private ITransactionService _transactionService;
 
         public TransactionViewModel()
         {
-            _transactionOutlayService = DependencyService.Get<ITransactionOutlayService>() ?? throw new NullReferenceException();
+            _transactionService = DependencyService.Get<ITransactionService>() ?? throw new NullReferenceException();
         }
 
-        public List<string> LoadTransactionCodes()
+        public Task<List<TransactionTypeModelView>> LoadTransactionTypes()
         {
-            return _transactionOutlayService.Codes().ToList();
+            List<TransactionTypeModelView> transactionTypeModelViews = new List<TransactionTypeModelView>();
+
+            List<TransactionType> transactionTypes = _transactionService.TransactionTypes().Result;
+
+            transactionTypes.ForEach(x => transactionTypeModelViews.Add(new TransactionTypeModelView(x)));
+
+            return Task.FromResult(transactionTypeModelViews);
         }
 
-        public List<string> LoadTransactionOperations()
+        public Task<List<TransactionCodeModelView>> LoadTransactionCodes()
         {
-            return _transactionOutlayService.Operations().ToList();
+            List<TransactionCodeModelView> transactionCodeModelViews = new List<TransactionCodeModelView>();
+
+            List<TransactionCode> transactionCodes = _transactionService.TransactionCodes().Result;
+
+            transactionCodes.ForEach(x => transactionCodeModelViews.Add(new TransactionCodeModelView(x)));
+
+            return Task.FromResult(transactionCodeModelViews);
+        }
+
+        public Task<OperationResponse> SaveTransaction(TransactionOutlayModelView transactionOutlayView)
+        {
+            TransactionMessage transactionMessage = new TransactionMessage()
+            {
+                Id = transactionOutlayView.Id,
+                Amount = transactionOutlayView.Amount,
+                CodeID= transactionOutlayView.Code.Id,
+                TypeID = transactionOutlayView.Type.Id,
+                Date = transactionOutlayView.Date,
+                Description = transactionOutlayView.Description
+            };
+
+            return _transactionService.SaveTransaction(transactionMessage);
+        }
+
+        public Task<OperationResponse> DeleteTransaction(Guid transactionID)
+        {
+            return _transactionService.DeleteTransaction(transactionID);
         }
     }
 }

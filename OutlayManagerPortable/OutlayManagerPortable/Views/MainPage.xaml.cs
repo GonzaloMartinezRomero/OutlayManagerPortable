@@ -1,45 +1,58 @@
-﻿using OutlayManagerPortable.Models;
+﻿
+using OutlayManagerPortable.Models;
 using OutlayManagerPortable.ViewModels;
 using OutlayManagerPortable.Views;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace OutlayManagerPortable
 {
+
     public partial class MainPage : ContentPage
     {
         private readonly MainPageViewModel mainPageViewModel = new MainPageViewModel();
-        private ObservableCollection<TransactionOutlay> transactions;
 
         public MainPage()
         {
-            InitializeComponent();
-            transactions = mainPageViewModel.LoadTransactions(DateTime.Now);
-            this.TransactionListView.ItemsSource = transactions; 
-           
+            InitializeComponent();             
         }
 
-        private void DateSelectedChanged(object sender, DateChangedEventArgs e)
+        protected override void OnAppearing()
         {
-            transactions = mainPageViewModel.LoadTransactions(DateTime.Now);
+            base.OnAppearing();
+            LoadTransactionsView();
+        }
+
+        private async void LoadTransactionsView()
+        {
+            this.TransactionListView.IsVisible = false;
+            this.ActivityIndicator.IsRunning = true;
+            this.ActivityIndicator.IsVisible = true;
+
+            ObservableCollection<TransactionOutlayModelView> transactions = await mainPageViewModel.LoadTransactions();
+
+            this.TransactionListView.ItemsSource = transactions;
+            
+            if (transactions.Count == 0)
+                this.AdvertisementText.Text = "No transactions availables";
+
+            this.ActivityIndicator.IsRunning = false;
+            this.TransactionListView.IsVisible = true;
+            this.ActivityIndicator.IsVisible = false;
         }
 
         private async void ItemSelectedEvent(object sender, ItemTappedEventArgs e)
         {
-            TransactionOutlay transactionSelected = (TransactionOutlay)e?.Item ?? new TransactionOutlay();
+            TransactionOutlayModelView transactionSelected = (TransactionOutlayModelView)e?.Item ?? new TransactionOutlayModelView();
 
             await this.Navigation.PushAsync(new TransactionPage(transactionSelected));
         }
 
-        private async void AddNewTransaction(object sender, EventArgs e)
+        private async void AddNewTransactionEvent(object sender, EventArgs e)
         {
-            await this.Navigation.PushAsync(new TransactionPage());
+            await this.Navigation.PushAsync(new TransactionPage(), animated: true);
         }
     }
 }

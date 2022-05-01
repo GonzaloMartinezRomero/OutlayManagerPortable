@@ -1,8 +1,6 @@
 ﻿using OutlayManagerPortable.Services.Abstract;
 using OutlayManagerPortable.Services.Implementation;
-using System;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace OutlayManagerPortable
 {
@@ -12,24 +10,14 @@ namespace OutlayManagerPortable
         {
             InitializeComponent();
 
-            DependencyService.Register<ITransactionOutlayService, TransactionOutlayAPIService>();
+            DependencyService.RegisterSingleton<ITransactionService>(new TransactionAzureService());
 
-            MainPage = new NavigationPage(new MainPage());
             
+            MainPage = new NavigationPage(new MainPage());
         }
 
         protected override void OnStart()
         {
-            //Check internet connectivity
-            //var a = Connectivity.NetworkAccess;
-            //if (a == NetworkAccess.Internet)
-            //{
-                    
-            //}
-            //else
-            //{
-            //    //Error
-            //}
 
         }
 

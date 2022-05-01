@@ -1,10 +1,6 @@
 ﻿using OutlayManagerPortable.Models;
 using OutlayManagerPortable.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -15,33 +11,73 @@ namespace OutlayManagerPortable.Views
     public partial class TransactionPage : ContentPage
     {
         private readonly TransactionViewModel transactionViewModel = new TransactionViewModel();
+        private readonly TransactionOutlayModelView transactionOutlayView = new TransactionOutlayModelView() { Date = DateTime.Today.Date };
 
         public TransactionPage()
         {
             InitializeComponent();
-
-            this.TransactionTypeSelector.ItemsSource = transactionViewModel.LoadTransactionOperations();
-            this.TransactionCodeSelector.ItemsSource = transactionViewModel.LoadTransactionCodes();
-
-            if (BindingContext == null)
-                BindingContext = new TransactionOutlay();
+            LoadMasterDataView();
+            BindingContext = transactionOutlayView;
+            this.DeleteButton.IsEnabled = false;
         }
 
-        public TransactionPage(TransactionOutlay transactionOutlay):this()
-        {   
-            BindingContext = transactionOutlay ?? new TransactionOutlay();
-        }
-
-        private async void AddNewTransaction(object sender, EventArgs e)
+        public TransactionPage(TransactionOutlayModelView transactionOutlay): this()
         {
-            //Transaction t = (Transaction)this.BindingContext;
+            transactionOutlayView = transactionOutlay;
+            BindingContext = transactionOutlayView;
+            this.DeleteButton.IsEnabled = true;
+        }
 
-            //newTransactionModel.AddNewTransaction(t);
+        private void LoadMasterDataView()
+        {
+            this.TransactionTypeSelector.ItemsSource = transactionViewModel.LoadTransactionTypes().Result;
+            this.TransactionCodeSelector.ItemsSource = transactionViewModel.LoadTransactionCodes().Result;            
+        }
 
-            //this.ActivityIndicator.IsRunning = true;
-            //await Task.Delay(5000);
-            //this.ActivityIndicator.IsRunning = false;
-            //await DisplayAlert("Transaction", "Transaction saved succesfully!", "OK");
+        private async void SaveTransactionEvent(object sender, EventArgs e)
+        {
+            this.ActivityIndicator.IsRunning = true;
+            this.Content.IsEnabled = false;
+
+            OperationResponse operationResponse = await transactionViewModel.SaveTransaction(transactionOutlayView);
+
+            this.ActivityIndicator.IsRunning = false;
+
+            switch (operationResponse.OperationStatus)
+            {
+                case OperationStatus.ERROR:
+                    await DisplayAlert("Transaction", $"Error on saving:{operationResponse.Message}", "OK");
+                    break;
+
+                case OperationStatus.OK:
+                    await DisplayAlert("Transaction", "Transaction saved succesfully!", "OK");                   
+                    break;
+            }
+
+            await this.Navigation.PopAsync(animated: true);
+        }
+
+        private async void DeleteTransactionEvent(object sender, EventArgs e)
+        {
+            this.ActivityIndicator.IsRunning = true;
+            this.Content.IsEnabled = false;
+
+            OperationResponse operationResponse = await transactionViewModel.DeleteTransaction(transactionOutlayView.Id);
+
+            this.ActivityIndicator.IsRunning = false;
+
+            switch (operationResponse.OperationStatus)
+            {
+                case OperationStatus.ERROR:
+                    await DisplayAlert("Delete Transaction", $"Error on delete:{operationResponse.Message}", "OK");
+                    break;
+
+                case OperationStatus.OK:
+                    await DisplayAlert("Delete Transaction", "Transaction deleted succesfully!", "OK");                   
+                    break;
+            }
+
+            await this.Navigation.PopAsync(animated: true);
         }
     }
 }

@@ -5,32 +5,54 @@
              Title="Transaction Outlay">
     
     <ContentPage.Content>
-        <StackLayout Spacing="3" Padding="15">
-            
-            <Label Text="Date" FontSize="Medium" />
-            <DatePicker x:Name="DatePicker" Date="{Binding Date}"/>
+        <Frame BorderColor="LightGray"
+       HasShadow="True"    
+       HeightRequest="120"
+       WidthRequest="120">
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                             EndPoint="1,0">
+                    <GradientStop Color="Ivory"
+                          Offset="0.1"/>
+                    <GradientStop Color="DarkTurquoise"
+                          Offset="1.0"/>
+                </LinearGradientBrush>
+            </Frame.Background>
 
-            <Label Text="Type" FontSize="Medium" />
-            <Picker x:Name = "TransactionTypeSelector" SelectedItem="{Binding Type}"/>
+            <StackLayout Spacing="3" Padding="15">
 
-            <Label Text="Code" FontSize="Medium" />
-            <Picker x:Name = "TransactionCodeSelector" SelectedItem="{Binding Code}" />
+                <Label Text="Date" FontSize="Large" FontAttributes="Italic,Bold"/>
+                <DatePicker x:Name="DatePicker" Date="{Binding Date}" Format="dd/MM/yyyy"/>
 
-            <Label Text="Amount €" FontSize="Medium"/>
-            <Entry FontSize="Medium" Keyboard="Numeric" Text="{Binding Amount}"/>
+                <Label Text="Type"  FontSize="Large" FontAttributes="Italic,Bold" />
+                <Picker x:Name = "TransactionTypeSelector" SelectedItem="{Binding Type}"/>
 
-            <Label Text="Description" FontSize="Medium" />
-            <Entry FontSize="Medium" Keyboard="Text" Text="{Binding Description}"/>
+                <Label Text="Code" FontSize="Large" FontAttributes="Italic,Bold" />
+                <Picker x:Name = "TransactionCodeSelector" SelectedItem="{Binding Code}" />
 
-            <StackLayout Orientation="Horizontal">
-                <Button Text="Delete" HorizontalOptions="CenterAndExpand" BackgroundColor="Red"></Button>
-                <Button x:Name="SaveButton" Text="Save" HorizontalOptions="CenterAndExpand" BackgroundColor="Green" Clicked="AddNewTransaction"></Button>
+                <Label Text="Amount €" FontSize="Large" FontAttributes="Italic,Bold"/>
+                <Entry FontSize="Medium" Keyboard="Numeric" Text="{Binding Amount}"/>
+
+                <Label Text="Description" FontSize="Large" FontAttributes="Italic,Bold" />
+                <Entry FontSize="Medium" Keyboard="Text" Text="{Binding Description}"/>
+
+                <StackLayout Orientation="Horizontal">
+                    <Button x:Name="DeleteButton" Text="Delete"  BackgroundColor="Red" Clicked="DeleteTransactionEvent"
+                            Margin="10"  VerticalOptions="Center" 
+                        HorizontalOptions="CenterAndExpand" BorderColor="Black" 
+                        BorderWidth="2" Background="OrangeRed" WidthRequest="100" CornerRadius="25"/>
+
+                    <Button x:Name="SaveButton" Text="Save" Clicked="SaveTransactionEvent"
+                            Margin="10"  VerticalOptions="Center" 
+                            HorizontalOptions="CenterAndExpand" WidthRequest="100" BorderColor="Black" 
+                            BorderWidth="2" Background="LimeGreen" CornerRadius="25"/>
+                </StackLayout>
+
+                <StackLayout>
+                    <ActivityIndicator x:Name="ActivityIndicator" IsRunning="False" VerticalOptions="Center"></ActivityIndicator>
+                </StackLayout>
+                
             </StackLayout>
-            
-            <StackLayout>
-                <ActivityIndicator x:Name="ActivityIndicator" IsRunning="False" VerticalOptions="Center"></ActivityIndicator>
-            </StackLayout>
-
-        </StackLayout>
+        </Frame>
     </ContentPage.Content>
 </ContentPage>
