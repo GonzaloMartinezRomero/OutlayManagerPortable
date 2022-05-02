@@ -16,41 +16,41 @@ namespace OutlayManagerPortable.Services.Implementation
         private readonly List<TransactionCode> transactionCodesCached = new List<TransactionCode>();
         private readonly List<TransactionMessage> transactionMessagesCached = new List<TransactionMessage>();
 
-        public Task<List<TransactionType>> TransactionTypes()
+        public async Task<List<TransactionType>> TransactionTypes()
         {
             if (transactionTypesCached.Count == 0)
             {
                 const string transactionTypeURI = "https://outlaymanagerportableapi.azurewebsites.net/DataMaster/TransactionType";
 
-                List<TransactionType> response = SendApiGetRequest<List<TransactionType>>(transactionTypeURI);
+                List<TransactionType> response = await SendApiGetRequestAsync<List<TransactionType>>(transactionTypeURI);
 
                 transactionTypesCached.AddRange(response);
             }
 
-            return Task.FromResult(transactionTypesCached);
+            return transactionTypesCached;
         }
 
-        public Task<List<TransactionCode>> TransactionCodes()
+        public async Task<List<TransactionCode>> TransactionCodes()
         {
             if(transactionCodesCached.Count == 0)
             {
                 const string transactionCodeURI = "https://outlaymanagerportableapi.azurewebsites.net/DataMaster/TransactionCode";
 
-                List<TransactionCode> response = SendApiGetRequest<List<TransactionCode>>(transactionCodeURI);
+                List<TransactionCode> response = await SendApiGetRequestAsync<List<TransactionCode>>(transactionCodeURI);
 
                 transactionCodesCached.AddRange(response);
             }
 
-            return Task.FromResult(transactionCodesCached);
+            return transactionCodesCached;
         }
 
-        public Task<List<TransactionMessage>> TransactionsQueued()
+        public async Task<List<TransactionMessage>> TransactionsQueued()
         {
             const string transactionCodeURI = "https://outlaymanagerportableapi.azurewebsites.net/TransactionOutlay";
 
             if (transactionMessagesCached.Count == 0)
             { 
-                List<TransactionMessage> response = SendApiGetRequest<List<TransactionMessage>>(transactionCodeURI);
+                List<TransactionMessage> response = await SendApiGetRequestAsync<List<TransactionMessage>>(transactionCodeURI);
 
                 foreach (TransactionMessage transactionMessageAux in response)
                 {
@@ -59,10 +59,10 @@ namespace OutlayManagerPortable.Services.Implementation
                 }
             }
 
-            return Task.FromResult(transactionMessagesCached);
+            return transactionMessagesCached;
         }
 
-        public Task<OperationResponse> SaveTransaction(TransactionMessage transactionMessage)
+        public async Task<OperationResponse> SaveTransaction(TransactionMessage transactionMessage)
         {
             const string URI = "https://outlaymanagerportableapi.azurewebsites.net/TransactionOutlay";
 
@@ -71,9 +71,9 @@ namespace OutlayManagerPortable.Services.Implementation
             HttpResponseMessage response;
 
             if (transactionMessage.Id == Guid.Empty)
-                response = SendApiPostRequest(URI, bodyContent);
+                response = await SendApiPostRequestAsync(URI, bodyContent);
             else
-                response = SendApiPutRequest(URI, bodyContent);
+                response = await SendApiPutRequestAsync(URI, bodyContent);
 
             OperationResponse operationResponse = new OperationResponse();
 
@@ -89,21 +89,21 @@ namespace OutlayManagerPortable.Services.Implementation
 
             ClearTransactionsCache();
 
-            return Task.FromResult<OperationResponse>(operationResponse);
+            return operationResponse;
         }
 
-        public Task<OperationResponse> DeleteTransaction(Guid transactionMessageId)
+        public async Task<OperationResponse> DeleteTransaction(Guid transactionMessageId)
         {
             if (transactionMessageId == Guid.Empty)
-                return Task.FromResult(new OperationResponse()
+                return new OperationResponse()
                 {
                     OperationStatus = OperationStatus.ERROR,
                     Message = "Transaction id is null"
-                });
+                };
 
             const string URI = "https://outlaymanagerportableapi.azurewebsites.net/TransactionOutlay";
 
-            HttpResponseMessage response = SendApiDeleteRequest(URI, transactionMessageId);
+            HttpResponseMessage response = await SendApiDeleteRequestAsync(URI, transactionMessageId);
 
             OperationResponse operationResponse = new OperationResponse();
 
@@ -119,7 +119,7 @@ namespace OutlayManagerPortable.Services.Implementation
 
             ClearTransactionsCache();
 
-            return Task.FromResult<OperationResponse>(operationResponse);
+            return operationResponse;
         }
 
         private bool TransactionMessageIsValid(TransactionMessage transactionMessageAux)
@@ -139,15 +139,15 @@ namespace OutlayManagerPortable.Services.Implementation
             return true;
         }
 
-        private T SendApiGetRequest<T>(string uri) where T:new ()
+        private async Task<T> SendApiGetRequestAsync<T>(string uri) where T:new ()
         {
             HttpClient httpClient = new HttpClient();
 
-            HttpResponseMessage httpResponse = httpClient.GetAsync(uri).Result;
+            HttpResponseMessage httpResponse = await httpClient.GetAsync(uri);
 
             if (httpResponse.IsSuccessStatusCode)
             {
-                string content = httpResponse.Content.ReadAsStringAsync().Result;
+                string content = await httpResponse.Content.ReadAsStringAsync();
 
                 T deserializedResult = JsonConvert.DeserializeObject<T>(content);
 
@@ -157,35 +157,35 @@ namespace OutlayManagerPortable.Services.Implementation
             return default;
         }
 
-        private HttpResponseMessage SendApiPostRequest(string uri, string body)
+        private async Task<HttpResponseMessage> SendApiPostRequestAsync(string uri, string body)
         {
             HttpClient httpClient = new HttpClient();
 
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage httpResponse = httpClient.PostAsync(uri, httpContent).Result;
+            HttpResponseMessage httpResponse = await httpClient.PostAsync(uri, httpContent);
 
             return httpResponse;
         }
 
-        private HttpResponseMessage SendApiDeleteRequest(string uri, Guid messageId)
+        private async Task<HttpResponseMessage> SendApiDeleteRequestAsync(string uri, Guid messageId)
         {
             HttpClient httpClient = new HttpClient();
 
             string deleteUri = String.Join("/", new string[]{ uri, messageId.ToString()});
 
-            HttpResponseMessage httpResponse = httpClient.DeleteAsync(deleteUri).Result;
+            HttpResponseMessage httpResponse = await httpClient.DeleteAsync(deleteUri);
 
             return httpResponse;
         }
 
-        private HttpResponseMessage SendApiPutRequest(string uri, string body)
+        private async Task<HttpResponseMessage> SendApiPutRequestAsync(string uri, string body)
         {
             HttpClient httpClient = new HttpClient();
 
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage httpResponse = httpClient.PutAsync(uri, httpContent).Result;
+            HttpResponseMessage httpResponse = await httpClient.PutAsync(uri, httpContent);
 
             return httpResponse;
         }

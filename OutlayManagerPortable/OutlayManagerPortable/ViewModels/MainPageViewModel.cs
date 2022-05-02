@@ -19,18 +19,18 @@ namespace OutlayManagerPortable.ViewModels
             _transactionService = DependencyService.Get<ITransactionService>() ?? throw new NullReferenceException();
         }
 
-        public Task<ObservableCollection<TransactionOutlayModelView>> LoadTransactions()
+        public async Task<List<TransactionOutlayModelView>> LoadTransactions()
         {
-            ObservableCollection<TransactionOutlayModelView> transactionsView = new ObservableCollection<TransactionOutlayModelView>();
+            List<TransactionOutlayModelView> transactionsView = new List<TransactionOutlayModelView>();
 
-            List<TransactionMessage> transactionMessages = _transactionService.TransactionsQueued().Result;
+            List<TransactionMessage> transactionMessages = await _transactionService.TransactionsQueued();
 
             if(transactionMessages.Count > 0)
             {
-                Dictionary<int, TransactionType> dictTypeTransaction = _transactionService.TransactionTypes().Result
+                Dictionary<int, TransactionType> dictTypeTransaction = (await _transactionService.TransactionTypes())
                                                                                           .ToDictionary(key => key.Id, value => value);
                 
-                Dictionary<int, TransactionCode> dictCodeTransaction = _transactionService.TransactionCodes().Result
+                Dictionary<int, TransactionCode> dictCodeTransaction = (await _transactionService.TransactionCodes())
                                                                                           .ToDictionary(key => key.Id, value => value);
 
                 IOrderedEnumerable<TransactionMessage> orderderTransactionMessages = transactionMessages.OrderBy(x => x.Date);
@@ -57,7 +57,7 @@ namespace OutlayManagerPortable.ViewModels
                 }
             }
 
-            return Task.FromResult(transactionsView);
+            return transactionsView;
         }
     }
 }

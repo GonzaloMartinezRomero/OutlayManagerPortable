@@ -1,46 +1,47 @@
-﻿
-using OutlayManagerPortable.Models;
+﻿using OutlayManagerPortable.Models;
 using OutlayManagerPortable.ViewModels;
 using OutlayManagerPortable.Views;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace OutlayManagerPortable
 {
-
     public partial class MainPage : ContentPage
     {
         private readonly MainPageViewModel mainPageViewModel = new MainPageViewModel();
+        private ObservableCollection<TransactionOutlayModelView> transctionView = new ObservableCollection<TransactionOutlayModelView>();
 
         public MainPage()
         {
-            InitializeComponent();             
+            InitializeComponent();
+            this.TransactionListView.ItemsSource = transctionView;
+            this.MainPageContent.Appearing += LoadTransactionInViewAsync;
         }
 
-        protected override void OnAppearing()
+        private async void LoadTransactionInViewAsync(object sender, EventArgs e)
         {
-            base.OnAppearing();
-            LoadTransactionsView();
-        }
+            ShowLoadingView();
 
-        private async void LoadTransactionsView()
-        {
-            this.TransactionListView.IsVisible = false;
-            this.ActivityIndicator.IsRunning = true;
-            this.ActivityIndicator.IsVisible = true;
+            List<TransactionOutlayModelView> transactions = await mainPageViewModel.LoadTransactions();
 
-            ObservableCollection<TransactionOutlayModelView> transactions = await mainPageViewModel.LoadTransactions();
+            transctionView.Clear();
 
-            this.TransactionListView.ItemsSource = transactions;
-            
-            if (transactions.Count == 0)
-                this.AdvertisementText.Text = "No transactions availables";
+            foreach (var transactionAux in transactions)
+                transctionView.Add(transactionAux);
 
-            this.ActivityIndicator.IsRunning = false;
-            this.TransactionListView.IsVisible = true;
-            this.ActivityIndicator.IsVisible = false;
+            if (transctionView.Count == 0)
+            {
+                this.NotificationLabel.IsVisible = true;
+                this.NotificationLabel.Text = "No transactions availables";
+            }
+            else
+            {
+                this.NotificationLabel.IsVisible = false;
+            }
+
+            HideLoadingView();
         }
 
         private async void ItemSelectedEvent(object sender, ItemTappedEventArgs e)
@@ -53,6 +54,22 @@ namespace OutlayManagerPortable
         private async void AddNewTransactionEvent(object sender, EventArgs e)
         {
             await this.Navigation.PushAsync(new TransactionPage(), animated: true);
+        }
+
+        private void ShowLoadingView()
+        {
+            this.loadingView.IsVisible = true;
+            this.loadingIndicador.IsRunning = true;
+            saveButtonView.IsVisible = false;
+            transactionListViewContainer.IsVisible = false;
+        }
+
+        private void HideLoadingView()
+        {
+            this.loadingView.IsVisible = false;
+            this.loadingIndicador.IsRunning = false;
+            saveButtonView.IsVisible = true;
+            transactionListViewContainer.IsVisible = true;
         }
     }
 }

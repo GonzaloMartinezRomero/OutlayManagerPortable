@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:local="clr-namespace:OutlayManagerPortable.Converter"
              x:Class="OutlayManagerPortable.MainPage"
-             Title="Transaction Outlay Portable">
+             Title="Transaction Outlay Portable"
+             x:Name="MainPageContent">
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:DoubleToAmountConverter x:Key="DoubleToAmount"></local:DoubleToAmountConverter>
@@ -28,38 +29,49 @@
             </Frame.Background>
 
             <ScrollView>
-            <StackLayout Orientation="Vertical">
+                <StackLayout Orientation="Vertical" Spacing="10" >
 
-                <Button Text="New Transaction" Margin="10" Clicked="AddNewTransactionEvent" VerticalOptions="Center" 
-                        HorizontalOptions="CenterAndExpand" WidthRequest="200" BorderColor="Black" 
-                        BorderWidth="2" Background="Lavender" CornerRadius="25"/>
+                    <StackLayout Orientation="Horizontal" Spacing="50" x:Name="saveButtonView" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+                                                
+                        <Button Text="New Transaction" Clicked="AddNewTransactionEvent" 
+                                BorderColor="Black" WidthRequest="200"
+                                BorderWidth="2" Background="Lavender" CornerRadius="25"/>
+                        
+                    </StackLayout>
 
-                <Label x:Name="AdvertisementText"/>
-                <ActivityIndicator x:Name="ActivityIndicator" IsRunning="False" VerticalOptions="Center" ></ActivityIndicator>
+                    <StackLayout x:Name="loadingView" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+                        <ActivityIndicator x:Name="loadingIndicador"
+                           IsRunning="True"                                      
+                           Color="Black"/>
+                    </StackLayout>
 
-                    <Label Text="Transaction List" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" TextColor="Black"/>
-
+                    <StackLayout x:Name="transactionListViewContainer">
+                        <Label Text="     Outlays Transactions     " FontSize="Title" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" TextColor="Black" BackgroundColor="LavenderBlush" Opacity="0.8" Background="lavender"/>                    
+                    
+                    <Label x:Name="NotificationLabel" Text="" IsVisible="false" FontAttributes="Bold,Italic" TextColor="Red"/>
+                    
                     <ListView x:Name="TransactionListView"
-                          ItemTapped="ItemSelectedEvent"
-                          Margin="10"
-                          FlowDirection="LeftToRight"
-                          HorizontalScrollBarVisibility="Always" 
-                          SeparatorVisibility="Default">
+                            ItemTapped="ItemSelectedEvent"
+                            Margin="10"
+                            FlowDirection="LeftToRight"
+                            HorizontalScrollBarVisibility="Always" 
+                            SeparatorVisibility="Default">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
-                                        <Grid>
-                                            <Image Source="{Binding Type,Converter={StaticResource TypeToImage} }" Grid.Row="0" Grid.Column="0" />
-                                            <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" Grid.Row="0" Grid.Column="1" FontAttributes="Bold"/>
-                                            <Label Text="{Binding Code}" Grid.Row="0" Grid.Column="2" FontAttributes="Bold"/>
-                                            <Label Text="{Binding Amount,Converter={StaticResource DoubleToAmount}}" Grid.Row="0" Grid.Column="3" FontAttributes="Bold" />
-                                            <Label Text="{Binding Description}" Grid.Row="0"  Grid.Column="4" FontAttributes="Italic,Bold"/>
-                                        </Grid>
+                                    <Grid>
+                                        <Image Source="{Binding Type,Converter={StaticResource TypeToImage} }" Grid.Row="0" Grid.Column="0"/>
+                                        <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" Grid.Row="0" Grid.Column="1" FontAttributes="Bold"/>
+                                        <Label Text="{Binding Code}" Grid.Row="0" FontAttributes="Bold" Grid.Column="2"/>
+                                        <Label Text="{Binding Amount,Converter={StaticResource DoubleToAmount}}" Grid.Row="0" Grid.Column="3" FontAttributes="Bold" />
+                                        <Label Text="{Binding Description}" Grid.Row="0" Grid.Column="4" FontAttributes="Italic,Bold"/>
+                                    </Grid>
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>
-                </ListView>
-            </StackLayout>
+                    </ListView>
+                    </StackLayout>
+                </StackLayout>
         </ScrollView>
     </Frame>
 

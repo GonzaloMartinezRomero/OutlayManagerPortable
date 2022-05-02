@@ -17,29 +17,29 @@ namespace OutlayManagerPortable.ViewModels
             _transactionService = DependencyService.Get<ITransactionService>() ?? throw new NullReferenceException();
         }
 
-        public Task<List<TransactionTypeModelView>> LoadTransactionTypes()
+        public async Task<List<TransactionTypeModelView>> LoadTransactionTypesAsync()
         {
             List<TransactionTypeModelView> transactionTypeModelViews = new List<TransactionTypeModelView>();
 
-            List<TransactionType> transactionTypes = _transactionService.TransactionTypes().Result;
+            List<TransactionType> transactionTypes = await _transactionService.TransactionTypes();
 
             transactionTypes.ForEach(x => transactionTypeModelViews.Add(new TransactionTypeModelView(x)));
 
-            return Task.FromResult(transactionTypeModelViews);
+            return transactionTypeModelViews;
         }
 
-        public Task<List<TransactionCodeModelView>> LoadTransactionCodes()
+        public async Task<List<TransactionCodeModelView>> LoadTransactionCodesAsync()
         {
             List<TransactionCodeModelView> transactionCodeModelViews = new List<TransactionCodeModelView>();
 
-            List<TransactionCode> transactionCodes = _transactionService.TransactionCodes().Result;
+            List<TransactionCode> transactionCodes = await _transactionService.TransactionCodes();
 
             transactionCodes.ForEach(x => transactionCodeModelViews.Add(new TransactionCodeModelView(x)));
 
-            return Task.FromResult(transactionCodeModelViews);
+            return transactionCodeModelViews;
         }
 
-        public Task<OperationResponse> SaveTransaction(TransactionOutlayModelView transactionOutlayView)
+        public async Task<OperationResponse> SaveTransactionAsync(TransactionOutlayModelView transactionOutlayView)
         {
             TransactionMessage transactionMessage = new TransactionMessage()
             {
@@ -51,7 +51,7 @@ namespace OutlayManagerPortable.ViewModels
                 Description = transactionOutlayView.Description
             };
 
-            return _transactionService.SaveTransaction(transactionMessage);
+            return await _transactionService.SaveTransaction(transactionMessage);
         }
 
         public Task<OperationResponse> DeleteTransaction(Guid transactionID)

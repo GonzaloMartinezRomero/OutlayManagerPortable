@@ -1,7 +1,7 @@
 ﻿using OutlayManagerPortable.Models;
 using OutlayManagerPortable.ViewModels;
 using System;
-
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,41 +16,48 @@ namespace OutlayManagerPortable.Views
         public TransactionPage()
         {
             InitializeComponent();
-            LoadMasterDataView();
-            BindingContext = transactionOutlayView;
+
             this.DeleteButton.IsEnabled = false;
+
+            this.MainContentPage.Appearing += LoadMasterDataInViewAsync;
         }
+
+        private async void LoadMasterDataInViewAsync(object sender, EventArgs e)
+        {
+            ShowLoadingView();
+                        
+            this.TransactionTypeSelector.ItemsSource = await transactionViewModel.LoadTransactionTypesAsync();
+            this.TransactionCodeSelector.ItemsSource = await transactionViewModel.LoadTransactionCodesAsync();
+
+            BindingContext = transactionOutlayView;
+
+            HideLoadingView();
+        }    
 
         public TransactionPage(TransactionOutlayModelView transactionOutlay): this()
         {
             transactionOutlayView = transactionOutlay;
-            BindingContext = transactionOutlayView;
+           
             this.DeleteButton.IsEnabled = true;
-        }
-
-        private void LoadMasterDataView()
-        {
-            this.TransactionTypeSelector.ItemsSource = transactionViewModel.LoadTransactionTypes().Result;
-            this.TransactionCodeSelector.ItemsSource = transactionViewModel.LoadTransactionCodes().Result;            
         }
 
         private async void SaveTransactionEvent(object sender, EventArgs e)
         {
-            this.ActivityIndicator.IsRunning = true;
-            this.Content.IsEnabled = false;
+            ShowLoadingView();
 
-            OperationResponse operationResponse = await transactionViewModel.SaveTransaction(transactionOutlayView);
+            OperationResponse operationResponse = await transactionViewModel.SaveTransactionAsync(transactionOutlayView);
 
-            this.ActivityIndicator.IsRunning = false;
+            HideLoadingView();
 
             switch (operationResponse.OperationStatus)
             {
                 case OperationStatus.ERROR:
+                    
                     await DisplayAlert("Transaction", $"Error on saving:{operationResponse.Message}", "OK");
                     break;
 
                 case OperationStatus.OK:
-                    await DisplayAlert("Transaction", "Transaction saved succesfully!", "OK");                   
+                    await DisplayAlert("Transaction", "Transaction saved succesfully!", "OK");
                     break;
             }
 
@@ -59,12 +66,11 @@ namespace OutlayManagerPortable.Views
 
         private async void DeleteTransactionEvent(object sender, EventArgs e)
         {
-            this.ActivityIndicator.IsRunning = true;
-            this.Content.IsEnabled = false;
+            ShowLoadingView();
 
             OperationResponse operationResponse = await transactionViewModel.DeleteTransaction(transactionOutlayView.Id);
 
-            this.ActivityIndicator.IsRunning = false;
+            HideLoadingView();
 
             switch (operationResponse.OperationStatus)
             {
@@ -73,11 +79,27 @@ namespace OutlayManagerPortable.Views
                     break;
 
                 case OperationStatus.OK:
-                    await DisplayAlert("Delete Transaction", "Transaction deleted succesfully!", "OK");                   
+                    await DisplayAlert("Delete Transaction", "Transaction deleted succesfully!", "OK");
                     break;
             }
 
             await this.Navigation.PopAsync(animated: true);
+        }
+
+        private void ShowLoadingView()
+        {
+            mainStackLayout.IsVisible = false;
+            loadingScreen.IsVisible = true;
+            loadingIndicador.IsRunning = true;
+            loadingIndicador.IsVisible = true;
+        }
+
+        private void HideLoadingView()
+        {
+            mainStackLayout.IsVisible = true;
+            loadingScreen.IsVisible = false;
+            loadingIndicador.IsRunning = false;
+            loadingIndicador.IsVisible = false;
         }
     }
 }
