@@ -1,7 +1,6 @@
 ﻿using OutlayManagerPortable.Models;
 using OutlayManagerPortable.ViewModels;
 using System;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -24,14 +23,23 @@ namespace OutlayManagerPortable.Views
 
         private async void LoadMasterDataInViewAsync(object sender, EventArgs e)
         {
-            ShowLoadingView();
-                        
-            this.TransactionTypeSelector.ItemsSource = await transactionViewModel.LoadTransactionTypesAsync();
-            this.TransactionCodeSelector.ItemsSource = await transactionViewModel.LoadTransactionCodesAsync();
+            try
+            {
+                ShowLoadingView();
 
-            BindingContext = transactionOutlayView;
+                this.TransactionTypeSelector.ItemsSource = await transactionViewModel.LoadTransactionTypesAsync();
+                this.TransactionCodeSelector.ItemsSource = await transactionViewModel.LoadTransactionCodesAsync();
 
-            HideLoadingView();
+                BindingContext = transactionOutlayView;
+            }
+            catch(Exception except)
+            {
+                await DisplayAlert("Transaction", except.Message, "Ok");
+            }
+            finally
+            {
+                HideLoadingView();
+            }
         }    
 
         public TransactionPage(TransactionOutlayModelView transactionOutlay): this()
@@ -43,47 +51,41 @@ namespace OutlayManagerPortable.Views
 
         private async void SaveTransactionEvent(object sender, EventArgs e)
         {
-            ShowLoadingView();
-
-            OperationResponse operationResponse = await transactionViewModel.SaveTransactionAsync(transactionOutlayView);
-
-            HideLoadingView();
-
-            switch (operationResponse.OperationStatus)
+            try
             {
-                case OperationStatus.ERROR:
-                    
-                    await DisplayAlert("Transaction", $"Error on saving:{operationResponse.Message}", "OK");
-                    break;
+                ShowLoadingView();
+                await transactionViewModel.SaveTransactionAsync(transactionOutlayView);
 
-                case OperationStatus.OK:
-                    await DisplayAlert("Transaction", "Transaction saved succesfully!", "OK");
-                    break;
             }
-
-            await this.Navigation.PopAsync(animated: true);
+            catch (Exception except)
+            {
+                await DisplayAlert("Transaction", except.Message, "Ok");
+            }
+            finally
+            {
+                HideLoadingView();
+                _ = await this.Navigation.PopAsync(animated: true);
+            }
         }
 
         private async void DeleteTransactionEvent(object sender, EventArgs e)
         {
-            ShowLoadingView();
-
-            OperationResponse operationResponse = await transactionViewModel.DeleteTransaction(transactionOutlayView.Id);
-
-            HideLoadingView();
-
-            switch (operationResponse.OperationStatus)
+            try
             {
-                case OperationStatus.ERROR:
-                    await DisplayAlert("Delete Transaction", $"Error on delete:{operationResponse.Message}", "OK");
-                    break;
+                ShowLoadingView();
 
-                case OperationStatus.OK:
-                    await DisplayAlert("Delete Transaction", "Transaction deleted succesfully!", "OK");
-                    break;
+                await transactionViewModel.DeleteTransaction(transactionOutlayView.Id);
             }
+            catch(Exception except)
+            {
+                await DisplayAlert("Transaction", except.Message, "Ok");
+            }
+            finally
+            {
+                HideLoadingView();
 
-            await this.Navigation.PopAsync(animated: true);
+                _ = await this.Navigation.PopAsync(animated: true);
+            }
         }
 
         private void ShowLoadingView()

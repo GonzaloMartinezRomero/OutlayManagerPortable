@@ -39,24 +39,27 @@ namespace OutlayManagerPortable.ViewModels
             return transactionCodeModelViews;
         }
 
-        public async Task<OperationResponse> SaveTransactionAsync(TransactionOutlayModelView transactionOutlayView)
+        public async Task SaveTransactionAsync(TransactionOutlayModelView transactionOutlayView)
         {
+            if (transactionOutlayView == null)
+                throw new ArgumentNullException($"{nameof(SaveTransactionAsync)}: Error on save null transaction");
+
             TransactionMessage transactionMessage = new TransactionMessage()
             {
                 Id = transactionOutlayView.Id,
                 Amount = transactionOutlayView.Amount,
-                CodeID= transactionOutlayView.Code.Id,
-                TypeID = transactionOutlayView.Type.Id,
+                CodeID= transactionOutlayView.Code?.Id ?? throw new NullReferenceException($"{nameof(TransactionOutlayModelView.Code)} is null"),
+                TypeID = transactionOutlayView.Type?.Id ?? throw new NullReferenceException($"{nameof(TransactionOutlayModelView.Type)} is null"),
                 Date = transactionOutlayView.Date,
                 Description = transactionOutlayView.Description
             };
 
-            return await _transactionService.SaveTransaction(transactionMessage);
+            await _transactionService.SaveTransaction(transactionMessage);
         }
 
-        public Task<OperationResponse> DeleteTransaction(Guid transactionID)
+        public async Task DeleteTransaction(Guid transactionID)
         {
-            return _transactionService.DeleteTransaction(transactionID);
+            await _transactionService.DeleteTransaction(transactionID);
         }
     }
 }

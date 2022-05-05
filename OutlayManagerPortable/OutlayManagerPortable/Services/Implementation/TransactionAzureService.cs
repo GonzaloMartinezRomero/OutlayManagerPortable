@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using OutlayManagerPortable.DTO;
-using OutlayManagerPortable.Models;
 using OutlayManagerPortable.Services.Abstract;
 using System;
 using System.Collections.Generic;
@@ -62,64 +61,30 @@ namespace OutlayManagerPortable.Services.Implementation
             return transactionMessagesCached;
         }
 
-        public async Task<OperationResponse> SaveTransaction(TransactionMessage transactionMessage)
+        public async Task SaveTransaction(TransactionMessage transactionMessage)
         {
             const string URI = "https://outlaymanagerportableapi.azurewebsites.net/TransactionOutlay";
 
             string bodyContent = JsonConvert.SerializeObject(transactionMessage);
 
-            HttpResponseMessage response;
-
             if (transactionMessage.Id == Guid.Empty)
-                response = await SendApiPostRequestAsync(URI, bodyContent);
+                _ = await SendApiPostRequestAsync(URI, bodyContent);
             else
-                response = await SendApiPutRequestAsync(URI, bodyContent);
-
-            OperationResponse operationResponse = new OperationResponse();
-
-            if (response.IsSuccessStatusCode)
-            {
-                operationResponse.OperationStatus = OperationStatus.OK;
-            }
-            else
-            {
-                operationResponse.OperationStatus = OperationStatus.ERROR;
-                operationResponse.Message = response.Content.ReadAsStringAsync().Result;
-            }
+                _ = await SendApiPutRequestAsync(URI, bodyContent);
 
             ClearTransactionsCache();
-
-            return operationResponse;
         }
 
-        public async Task<OperationResponse> DeleteTransaction(Guid transactionMessageId)
+        public async Task DeleteTransaction(Guid transactionMessageId)
         {
             if (transactionMessageId == Guid.Empty)
-                return new OperationResponse()
-                {
-                    OperationStatus = OperationStatus.ERROR,
-                    Message = "Transaction id is null"
-                };
+                throw new NullReferenceException($"{nameof(DeleteTransaction)}: {nameof(transactionMessageId)} is null or empty");
 
             const string URI = "https://outlaymanagerportableapi.azurewebsites.net/TransactionOutlay";
 
-            HttpResponseMessage response = await SendApiDeleteRequestAsync(URI, transactionMessageId);
-
-            OperationResponse operationResponse = new OperationResponse();
-
-            if (response.IsSuccessStatusCode)
-            {
-                operationResponse.OperationStatus = OperationStatus.OK;
-            }
-            else
-            {
-                operationResponse.OperationStatus = OperationStatus.ERROR;
-                operationResponse.Message = response.Content.ReadAsStringAsync().Result;
-            }
-
+            _ = await SendApiDeleteRequestAsync(URI, transactionMessageId);
+                        
             ClearTransactionsCache();
-
-            return operationResponse;
         }
 
         private bool TransactionMessageIsValid(TransactionMessage transactionMessageAux)
@@ -145,16 +110,18 @@ namespace OutlayManagerPortable.Services.Implementation
 
             HttpResponseMessage httpResponse = await httpClient.GetAsync(uri);
 
+            string content = await httpResponse.Content.ReadAsStringAsync();
+
             if (httpResponse.IsSuccessStatusCode)
             {
-                string content = await httpResponse.Content.ReadAsStringAsync();
-
                 T deserializedResult = JsonConvert.DeserializeObject<T>(content);
 
                 return deserializedResult;
             }
-
-            return default;
+            else
+            {   
+                throw new Exception($"{nameof(SendApiGetRequestAsync)}: {httpResponse.StatusCode}: {httpResponse.ReasonPhrase}");
+            }
         }
 
         private async Task<HttpResponseMessage> SendApiPostRequestAsync(string uri, string body)
@@ -164,6 +131,12 @@ namespace OutlayManagerPortable.Services.Implementation
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
             HttpResponseMessage httpResponse = await httpClient.PostAsync(uri, httpContent);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                string content = await httpResponse.Content.ReadAsStringAsync();
+                throw new Exception($"{nameof(SendApiPostRequestAsync)}: {httpResponse.StatusCode}: {httpResponse.ReasonPhrase}");
+            }
 
             return httpResponse;
         }
@@ -176,6 +149,12 @@ namespace OutlayManagerPortable.Services.Implementation
 
             HttpResponseMessage httpResponse = await httpClient.DeleteAsync(deleteUri);
 
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                string content = await httpResponse.Content.ReadAsStringAsync();
+                throw new Exception($"{nameof(SendApiDeleteRequestAsync)}: {httpResponse.StatusCode}: {httpResponse.ReasonPhrase}");
+            }
+
             return httpResponse;
         }
 
@@ -186,6 +165,12 @@ namespace OutlayManagerPortable.Services.Implementation
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
             HttpResponseMessage httpResponse = await httpClient.PutAsync(uri, httpContent);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                string content = await httpResponse.Content.ReadAsStringAsync();
+                throw new Exception($"{nameof(SendApiPutRequestAsync)}: {httpResponse.StatusCode}: {httpResponse.ReasonPhrase}");
+            }
 
             return httpResponse;
         }

@@ -22,26 +22,35 @@ namespace OutlayManagerPortable
 
         private async void LoadTransactionInViewAsync(object sender, EventArgs e)
         {
-            ShowLoadingView();
+            try
+            {   
+                ShowLoadingView();
 
-            List<TransactionOutlayModelView> transactions = await mainPageViewModel.LoadTransactions();
+                List<TransactionOutlayModelView> transactions = await mainPageViewModel.LoadTransactions();
 
-            transctionView.Clear();
+                transctionView.Clear();
 
-            foreach (var transactionAux in transactions)
-                transctionView.Add(transactionAux);
+                foreach (var transactionAux in transactions)
+                    transctionView.Add(transactionAux);
 
-            if (transctionView.Count == 0)
-            {
-                this.NotificationLabel.IsVisible = true;
-                this.NotificationLabel.Text = "No transactions availables";
+                if (transctionView.Count == 0)
+                {
+                    this.NotificationLabel.IsVisible = true;
+                    this.NotificationLabel.Text = "No transactions availables";
+                }
+                else
+                {
+                    this.NotificationLabel.IsVisible = false;
+                }
             }
-            else
+            catch(Exception except)
             {
-                this.NotificationLabel.IsVisible = false;
+                await DisplayAlert("Transaction View", except.Message,"Ok");
             }
-
-            HideLoadingView();
+            finally
+            {
+                HideLoadingView();
+            }            
         }
 
         private async void ItemSelectedEvent(object sender, ItemTappedEventArgs e)
