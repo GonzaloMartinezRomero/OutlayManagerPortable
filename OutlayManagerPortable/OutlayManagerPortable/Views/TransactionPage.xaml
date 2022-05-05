@@ -38,7 +38,7 @@
                     <Picker x:Name = "TransactionCodeSelector" SelectedItem="{Binding Code}"  />
 
                     <Label Text="Amount €" FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
-                    <Entry FontSize="Medium" Keyboard="Numeric" Text="{Binding Amount}"/>
+                    <Entry FontSize="Medium" Keyboard="Numeric" Text="{Binding Amount} "/>
 
                     <Label Text="Description" FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
                     <Entry FontSize="Medium" Keyboard="Text" Text="{Binding Description}"/>

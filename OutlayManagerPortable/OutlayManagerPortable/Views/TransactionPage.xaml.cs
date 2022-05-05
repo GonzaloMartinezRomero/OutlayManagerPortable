@@ -62,8 +62,7 @@ namespace OutlayManagerPortable.Views
                 await DisplayAlert("Transaction", except.Message, "Ok");
             }
             finally
-            {
-                HideLoadingView();
+            {   
                 _ = await this.Navigation.PopAsync(animated: true);
             }
         }
@@ -82,8 +81,6 @@ namespace OutlayManagerPortable.Views
             }
             finally
             {
-                HideLoadingView();
-
                 _ = await this.Navigation.PopAsync(animated: true);
             }
         }

@@ -45,7 +45,7 @@ namespace OutlayManagerPortable.ViewModels
 
                     TransactionOutlayModelView transactionOutlayModelView = new TransactionOutlayModelView()
                     {
-                        Amount = transactionMessageAux.Amount,
+                        Amount = transactionMessageAux.Amount.ToString(),
                         Date = transactionMessageAux.Date,
                         Description = transactionMessageAux.Description,
                         Id = transactionMessageAux.Id,

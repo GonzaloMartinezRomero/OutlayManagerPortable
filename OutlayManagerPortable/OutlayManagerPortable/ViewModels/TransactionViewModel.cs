@@ -3,6 +3,7 @@ using OutlayManagerPortable.Models;
 using OutlayManagerPortable.Services.Abstract;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -44,10 +45,12 @@ namespace OutlayManagerPortable.ViewModels
             if (transactionOutlayView == null)
                 throw new ArgumentNullException($"{nameof(SaveTransactionAsync)}: Error on save null transaction");
 
+            double amountParsed = ParseStringToDouble(transactionOutlayView.Amount);
+
             TransactionMessage transactionMessage = new TransactionMessage()
             {
                 Id = transactionOutlayView.Id,
-                Amount = transactionOutlayView.Amount,
+                Amount = amountParsed,
                 CodeID= transactionOutlayView.Code?.Id ?? throw new NullReferenceException($"{nameof(TransactionOutlayModelView.Code)} is null"),
                 TypeID = transactionOutlayView.Type?.Id ?? throw new NullReferenceException($"{nameof(TransactionOutlayModelView.Type)} is null"),
                 Date = transactionOutlayView.Date,
@@ -55,6 +58,21 @@ namespace OutlayManagerPortable.ViewModels
             };
 
             await _transactionService.SaveTransaction(transactionMessage);
+        }
+
+        private double ParseStringToDouble(string amount)
+        {
+            string amountNormalized = amount.Replace(',', '.');
+
+            NumberFormatInfo numberFormatInfo = new NumberFormatInfo() 
+            { 
+                NumberDecimalSeparator = "."
+            };
+
+            if (!Double.TryParse(amountNormalized, NumberStyles.Float, numberFormatInfo, out double amountParsed))
+                throw new Exception($"Unable to cast {amount} to double");
+
+            return amountParsed;
         }
 
         public async Task DeleteTransaction(Guid transactionID)
