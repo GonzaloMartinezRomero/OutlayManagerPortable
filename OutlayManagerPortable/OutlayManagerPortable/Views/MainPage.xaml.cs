@@ -11,7 +11,7 @@ namespace OutlayManagerPortable
     public partial class MainPage : ContentPage
     {
         private readonly MainPageViewModel mainPageViewModel = new MainPageViewModel();
-        private ObservableCollection<TransactionOutlayModelView> transctionView = new ObservableCollection<TransactionOutlayModelView>();
+        private readonly ObservableCollection<TransactionOutlayModelView> transctionView = new ObservableCollection<TransactionOutlayModelView>();
 
         public MainPage()
         {

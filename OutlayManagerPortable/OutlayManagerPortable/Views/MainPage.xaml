@@ -35,7 +35,7 @@
                                                 
                         <Button Text="New Transaction" Clicked="AddNewTransactionEvent" 
                                 BorderColor="Black" WidthRequest="200"
-                                BorderWidth="2" Background="Lavender" CornerRadius="25"/>
+                                BorderWidth="2" Background="LimeGreen" CornerRadius="25" FontAttributes="Bold"/>
                         
                     </StackLayout>
 
@@ -46,25 +46,36 @@
                     </StackLayout>
 
                     <StackLayout x:Name="transactionListViewContainer">
-                        <Label Text="     Outlays Transactions     " FontSize="Title" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" TextColor="Black" BackgroundColor="LavenderBlush" Opacity="0.8" Background="lavender"/>                    
+                        <Label Text="Outlays Transactions" FontSize="Title" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" TextColor="Black"/>                    
                     
-                    <Label x:Name="NotificationLabel" Text="" IsVisible="false" FontAttributes="Bold,Italic" TextColor="Red"/>
+                    <Label x:Name="NotificationLabel" Text="" IsVisible="false" FontAttributes="Bold,Italic" TextColor="Red" Margin="20"/>
                     
                     <ListView x:Name="TransactionListView"
-                            ItemTapped="ItemSelectedEvent"
-                            Margin="10"
+                            ItemTapped="ItemSelectedEvent"                            
                             FlowDirection="LeftToRight"
                             HorizontalScrollBarVisibility="Always" 
-                            SeparatorVisibility="Default">
+                            SeparatorVisibility="Default"
+                            Margin="1">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <Grid>
-                                        <Image Source="{Binding Type,Converter={StaticResource TypeToImage} }" Grid.Row="0" Grid.Column="0"/>
-                                        <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" Grid.Row="0" Grid.Column="1" FontAttributes="Bold"/>
-                                        <Label Text="{Binding Code}" Grid.Row="0" FontAttributes="Bold" Grid.Column="2"/>
-                                        <Label Text="{Binding Amount,Converter={StaticResource DoubleToAmount}}" Grid.Row="0" Grid.Column="3" FontAttributes="Bold" />
-                                        <Label Text="{Binding Description}" Grid.Row="0" Grid.Column="4" FontAttributes="Italic,Bold"/>
+                                        <Grid.RowDefinitions>
+                                               <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="25"/>
+                                                <ColumnDefinition Width="80"/>
+                                                <ColumnDefinition Width="65"/>
+                                                <ColumnDefinition Width="65"/>
+                                                <ColumnDefinition Width="Auto"/>                                                
+                                            </Grid.ColumnDefinitions>
+                                        
+                                            <Image Source="{Binding Type,Converter={StaticResource TypeToImage} }" Grid.Row="0" Grid.Column="0" HorizontalOptions="End" VerticalOptions="Center"/>
+                                            <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" Grid.Row="0" Grid.Column="1" FontAttributes="Bold" HorizontalOptions="End" VerticalOptions="Center"/>
+                                            <Label Text="{Binding Code}" Grid.Row="0" FontAttributes="Bold" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center"/>
+                                            <Label Text="{Binding Amount,Converter={StaticResource DoubleToAmount}}" Grid.Row="0" Grid.Column="3" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            <Label Text="{Binding Description}" Grid.Row="0" Grid.Column="4" FontAttributes="Italic,Bold" HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand"/>
                                     </Grid>
                                 </ViewCell>
                             </DataTemplate>

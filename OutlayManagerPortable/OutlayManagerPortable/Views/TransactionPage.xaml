@@ -8,7 +8,7 @@
     <ContentPage.Content>       
         
         <Frame BorderColor="LightGray"
-               HasShadow="True"       >      
+               HasShadow="True">      
             <Frame.Background>
                 <LinearGradientBrush StartPoint="0,0"
                              EndPoint="1,0">
@@ -28,29 +28,29 @@
                 </StackLayout>
 
                 <StackLayout x:Name="mainStackLayout" IsVisible="False">
-                    <Label Text="Date" FontSize="Large" FontAttributes="Italic,Bold"/>
+                    <Label Text="Date" FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
                     <DatePicker x:Name="DatePicker" Date="{Binding Date}" Format="dd/MM/yyyy"/>
 
-                    <Label Text="Type"  FontSize="Large" FontAttributes="Italic,Bold" />
+                    <Label Text="Type"  FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
                     <Picker x:Name = "TransactionTypeSelector" SelectedItem="{Binding Type}"/>
 
-                    <Label Text="Code" FontSize="Large" FontAttributes="Italic,Bold" />
+                    <Label Text="Code" FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
                     <Picker x:Name = "TransactionCodeSelector" SelectedItem="{Binding Code}"  />
 
-                    <Label Text="Amount €" FontSize="Large" FontAttributes="Italic,Bold"/>
+                    <Label Text="Amount €" FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
                     <Entry FontSize="Medium" Keyboard="Numeric" Text="{Binding Amount}"/>
 
-                    <Label Text="Description" FontSize="Large" FontAttributes="Italic,Bold" />
+                    <Label Text="Description" FontSize="Large" FontAttributes="Italic,Bold" TextColor="Black"/>
                     <Entry FontSize="Medium" Keyboard="Text" Text="{Binding Description}"/>
 
                     <StackLayout Orientation="Horizontal">
                         <Button x:Name="DeleteButton" Text="Delete"  BackgroundColor="Red" Clicked="DeleteTransactionEvent"
-                                Margin="10"  VerticalOptions="Center" 
+                                Margin="10"  VerticalOptions="Center" TextColor="Black"
                             HorizontalOptions="CenterAndExpand" BorderColor="Black" 
                             BorderWidth="2" Background="OrangeRed" WidthRequest="100" CornerRadius="25"/>
 
                         <Button x:Name="SaveButton" Text="Save" Clicked="SaveTransactionEvent"
-                                Margin="10"  VerticalOptions="Center" 
+                                Margin="10"  VerticalOptions="Center" TextColor="Black"
                                 HorizontalOptions="CenterAndExpand" WidthRequest="100" BorderColor="Black" 
                                 BorderWidth="2" Background="LimeGreen" CornerRadius="25"/>
                     </StackLayout>
