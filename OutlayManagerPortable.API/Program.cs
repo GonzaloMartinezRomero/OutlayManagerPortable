@@ -20,7 +20,13 @@ namespace OutlayManagerPortable.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                              .ConfigureLogging(config=> 
+                              {
+                                  config.ClearProviders();
+                                  config.AddConsole();
+                                  config.AddAzureWebAppDiagnostics();
+                              });
                 });
     }
 }

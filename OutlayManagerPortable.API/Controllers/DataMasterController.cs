@@ -13,10 +13,10 @@ namespace OutlayManagerPortable.API.Controllers
     [Route("[controller]")]
     public class DataMasterController : ControllerBase
     {
-        private readonly ILogger<TransactionOutlayController> _logger;
+        private readonly ILogger<DataMasterController> _logger;
         private readonly IMasterData _masterDataService;
 
-        public DataMasterController(ILogger<TransactionOutlayController> logger, IMasterData masterDataService)
+        public DataMasterController(ILogger<DataMasterController> logger, IMasterData masterDataService)
         {
             _logger = logger;
             _masterDataService = masterDataService;
@@ -29,11 +29,14 @@ namespace OutlayManagerPortable.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Recovering transaction types");
+
                 IEnumerable<TransactionType> transactionTypes = await _masterDataService.TransactionsTypes();
                 return Ok(transactionTypes);
             }
             catch (Exception e)
             {
+                _logger.LogError("Error recovering transaction types: {error}", e.Message);
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
@@ -45,11 +48,14 @@ namespace OutlayManagerPortable.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Recovering transaction codes");
+
                 IEnumerable<TransactionCode> transactionCodes = await _masterDataService.TransactionsCodes();
                 return Ok(transactionCodes);
             }
             catch (Exception e)
             {
+                _logger.LogError("Error recovering transactions codes: {error}", e.Message);
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }

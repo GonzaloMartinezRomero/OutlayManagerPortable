@@ -30,11 +30,14 @@ namespace OutlayManagerPortable.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Messages published");
+
                 List<TransactionMessage> messagesList = await _messageBusService.MessagesQueuedAsync();
                 return Ok(messagesList);
             }
             catch (Exception e)
             {
+                _logger.LogError("Error recovering messages published: {error}", e.Message);
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
@@ -46,11 +49,14 @@ namespace OutlayManagerPortable.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Publish transaction to queue");
+
                 TransactionMessage transactionMessageSaved = await _messageBusService.PublishMessageAsync(transactionMessage);
                 return Ok(transactionMessageSaved);
             }
             catch (Exception e)
             {
+                _logger.LogError("Error publish messages: {error}", e.Message);
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
@@ -63,15 +69,19 @@ namespace OutlayManagerPortable.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Update transaction");
+
                 TransactionMessage transactionMessageUpdated = await _messageBusService.UpdateMessageAsync(transactionMessage);
                 return Ok(transactionMessageUpdated);
             }
             catch (KeyNotFoundException)
             {
+                _logger.LogError("Error updating messages published: Id not found:{id}", transactionMessage.Id);
                 return NotFound(transactionMessage.Id);
             }
             catch (Exception e)
             {
+                _logger.LogError("Error updating messages published: {error}", e.Message);
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
@@ -83,16 +93,20 @@ namespace OutlayManagerPortable.API.Controllers
         public async Task<IActionResult> DeleteTransactionMessage([Required]Guid transactionMessageID)
         {
             try
-            { 
+            {
+                _logger.LogInformation("Delete transaction");
+
                 await _messageBusService.DeleteMessageAsync(transactionMessageID);
                 return Ok();
             }
             catch(KeyNotFoundException)
             {
+                _logger.LogError("Error delete messages: Message not found ID:{id}",transactionMessageID);
                 return NotFound(transactionMessageID);
             }
             catch (Exception e)
             {
+                _logger.LogError("Error delete messages: {error}", e.Message);
                 return Problem(e.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
