@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OutlayManagerPortable.DTO;
@@ -9,8 +10,9 @@ using System.Threading.Tasks;
 
 namespace OutlayManagerPortable.API.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]")]    
     public class DataMasterController : ControllerBase
     {
         private readonly ILogger<DataMasterController> _logger;

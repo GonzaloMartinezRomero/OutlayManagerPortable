@@ -1,11 +1,11 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OutlayManagerPortable.API
 {
@@ -18,8 +18,23 @@ namespace OutlayManagerPortable.API
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureAppConfiguration((context, config) => 
                 {
+                    //If is production load settings from KeyVault
+                    if (context.HostingEnvironment.IsProduction())
+                    {
+                        string keyVaultEndpoint = GetKeyVaultEndpoint();                                            
+
+                        if (String.IsNullOrEmpty(keyVaultEndpoint))
+                            throw new ArgumentNullException("Key vault endopoint not exist");
+                                     
+                        var secretClient = new SecretClient(new Uri(keyVaultEndpoint), new DefaultAzureCredential());
+                        
+                        config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());                       
+                    }
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {   
                     webBuilder.UseStartup<Startup>()
                               .ConfigureLogging(config=> 
                               {
@@ -28,5 +43,7 @@ namespace OutlayManagerPortable.API
                                   config.AddAzureWebAppDiagnostics();
                               });
                 });
+
+        static string GetKeyVaultEndpoint() => Environment.GetEnvironmentVariable("KEYVAULT_ENDPOINT");
     }
 }
