@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:OutlayManagerPortableMaui.Converter"
+             x:Class="OutlayManagerPortableMaui.MainPage"
+             x:Name="MainPageContent"
+             Title="Transaction Outlay Portable"             
+             >
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:DoubleToAmountConverter x:Key="DoubleToAmount"></local:DoubleToAmountConverter>
+            <local:TypeToImageConverter x:Key="TypeToImage"></local:TypeToImageConverter>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>       
+        <Frame BorderColor="LightGray" HasShadow="True">
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                             EndPoint="1,0">
+                    <GradientStop Color="Lavender"
+                          Offset="0.1"/>
+                    <GradientStop Color="DarkTurquoise"
+                          Offset="1.0"/>
+                </LinearGradientBrush>
+            </Frame.Background>
+          
+            <ScrollView>
+                
+                <StackLayout Orientation="Vertical">                  
+                    <StackLayout Orientation="Horizontal"
+                                 x:Name="saveButtonView" 
+                                 VerticalOptions="Start" 
+                                 HorizontalOptions="CenterAndExpand"
+                                 Margin="15">
+                        
+                        <Button Text="New Transaction" 
+                                Clicked="AddNewTransactionEvent" 
+                                BorderColor="Black" 
+                                BorderWidth="2" 
+                                Background="LimeGreen" 
+                                CornerRadius="25" 
+                                FontAttributes="Bold"
+                                WidthRequest="200"
+                                />
+
+                    </StackLayout>
+
+                    <StackLayout x:Name="loadingView" 
+                                 VerticalOptions="CenterAndExpand" 
+                                 HorizontalOptions="CenterAndExpand">
+                        
+                        <ActivityIndicator x:Name="loadingIndicador"
+                                           IsRunning="True"                                      
+                                           Color="Black"/>
+                    </StackLayout>
+
+                    <StackLayout x:Name="transactionListViewContainer" >
+                        <Label Text="Pending Transactions" FontSize="Title" FontAttributes="Bold"  TextColor="Black" HorizontalOptions="Center" />
+
+                        <Label x:Name="NotificationLabel" Text="" IsVisible="false" FontAttributes="Bold,Italic" TextColor="Red" HorizontalOptions="Center" Margin="20"/>
+
+                        <ListView x:Name="TransactionListView"
+                            ItemTapped="ItemSelectedEvent"                            
+                            FlowDirection="LeftToRight"
+                            HorizontalScrollBarVisibility="Always"                             
+                            Margin="10"      >
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="25" />
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Source="{Binding Type,Converter={StaticResource TypeToImage} }" Grid.Row="0" Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            <Label Text="{Binding Date, StringFormat='{0:dd/MM/yyyy}'}" Grid.Row="0" Grid.Column="1" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Margin="4"/>
+                                            <Label Text="{Binding Code}" Grid.Row="0" FontAttributes="Bold" Grid.Column="2" HorizontalOptions="Start" VerticalOptions="Center" Margin="4"/>
+                                            <Label Text="{Binding Amount,Converter={StaticResource DoubleToAmount}}" Grid.Row="0" Grid.Column="3" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="Center" Margin="5"/>
+                                            <Label Text="{Binding Description}" Grid.Row="0" Grid.Column="4" FontAttributes="Italic,Bold" HorizontalOptions="Start" VerticalOptions="Center" Margin="4"/>
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackLayout>
+                </StackLayout>
+            </ScrollView>
+        </Frame>
+
+    </ContentPage.Content>
+
+</ContentPage>
