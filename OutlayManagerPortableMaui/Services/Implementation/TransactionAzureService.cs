@@ -11,9 +11,10 @@ namespace OutlayManagerPortableMaui.Services.Implementation
     {
         private const string QUEUE_CONNECTION_STRING = "AzureTransactionQueue:ConnectionString";
         private const string QUEUE_NAME = "AzureTransactionQueue:Name";
+        private const int MAX_MESSAGES_RECEIVED = 30;
 
         private readonly QueueClient queueClient;
-        private readonly Dictionary<string, QueueMessage> cachedTransactions = new Dictionary<string, QueueMessage>();
+        private readonly Dictionary<Guid, AzureTransactionMessage> cachedTransactions = new Dictionary<Guid, AzureTransactionMessage>();
 
         private QueueClientOptions TransactionMessageOptions 
         {
@@ -35,10 +36,10 @@ namespace OutlayManagerPortableMaui.Services.Implementation
         {
             var messages = await LoadTransactionsQueued();            
 
-            if (messages.TryGetValue(transactionMessageId.ToString(), out QueueMessage value))
+            if (messages.TryGetValue(transactionMessageId, out AzureTransactionMessage value))
             {
-                await queueClient.DeleteMessageAsync(value.MessageId, value.PopReceipt);
-                ClearTransactionsCached();
+                await queueClient.DeleteMessageAsync(value.Id.ToString(), value.PopReceipt);
+                cachedTransactions.Remove(transactionMessageId);
             }   
             else
                 throw new ApplicationException("Transaction not found for delete");
@@ -47,15 +48,18 @@ namespace OutlayManagerPortableMaui.Services.Implementation
         public async Task SaveTransaction(TransactionMessage transactionMessage)
         {   
             string transactionMessageJson = JsonSerializer.Serialize(transactionMessage);
-            var response = await queueClient.SendMessageAsync(transactionMessageJson);
+            var response = await queueClient.SendMessageAsync(transactionMessageJson,
+                                                              visibilityTimeout:TimeSpan.FromSeconds(0),
+                                                              timeToLive:TimeSpan.FromSeconds(-1));
 
-            TransactionMessage transactionUpdated = transactionMessage;
+            AzureTransactionMessage transactionUpdated = new AzureTransactionMessage(transactionMessage);
             transactionUpdated.Id = Guid.Parse(response.Value.MessageId);
+            transactionUpdated.PopReceipt = response.Value.PopReceipt;
 
-            string transactionMessageIdUpdated = JsonSerializer.Serialize(transactionUpdated);
-            await queueClient.UpdateMessageAsync(response.Value.MessageId, response.Value.PopReceipt, transactionMessageIdUpdated);
+            cachedTransactions.Add(Guid.Parse(response.Value.MessageId), transactionUpdated);
 
-            ClearTransactionsCached();
+            if (cachedTransactions.Count >= MAX_MESSAGES_RECEIVED)
+                throw new ApplicationException("More messages than queue view can support");
         }
 
         public async Task<List<TransactionMessage>> TransactionsQueued()
@@ -64,31 +68,38 @@ namespace OutlayManagerPortableMaui.Services.Implementation
             var messages = await LoadTransactionsQueued();
 
             foreach (var message in messages.Values)
-            {
-                string transactionJsonMessage = message.Body.ToString();
-                TransactionMessage transactionMessage = JsonSerializer.Deserialize<TransactionMessage>(transactionJsonMessage);
-
-                transactions.Add(transactionMessage);   
-            }
+                transactions.Add(message);   
 
             return transactions;
         }
 
-        private async Task<Dictionary<string,QueueMessage>> LoadTransactionsQueued()
+        private async Task<Dictionary<Guid, AzureTransactionMessage>> LoadTransactionsQueued()
         {
             if(cachedTransactions.Count == 0)
             {
-                var messages = await queueClient.ReceiveMessagesAsync();
+                var messages = await queueClient.ReceiveMessagesAsync(MAX_MESSAGES_RECEIVED, TimeSpan.FromSeconds(1));
 
                 foreach (var message in messages.Value)
                 {
-                    cachedTransactions.Add(message.MessageId, message);
+                    AzureTransactionMessage azureTransactionMessage = BuildAzureMessage(message);
+
+                    cachedTransactions.Add(azureTransactionMessage.Id, azureTransactionMessage);
                 }
             }
 
             return cachedTransactions;
         }
 
-        private void ClearTransactionsCached () => cachedTransactions.Clear();
+        private AzureTransactionMessage BuildAzureMessage(QueueMessage queueMessage)
+        {
+            TransactionMessage transactionMessage = JsonSerializer.Deserialize<TransactionMessage>(queueMessage.Body.ToString());
+
+            AzureTransactionMessage azureTransactionMessage = new AzureTransactionMessage(transactionMessage);
+
+            azureTransactionMessage.Id = Guid.Parse(queueMessage.MessageId);
+            azureTransactionMessage.PopReceipt = queueMessage.PopReceipt;
+
+            return azureTransactionMessage;
+        }
     }
 }
