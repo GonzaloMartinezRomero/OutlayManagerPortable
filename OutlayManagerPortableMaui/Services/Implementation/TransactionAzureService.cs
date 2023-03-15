@@ -47,6 +47,9 @@ namespace OutlayManagerPortableMaui.Services.Implementation
 
         public async Task SaveTransaction(TransactionMessage transactionMessage)
         {   
+            if(cachedTransactions.ContainsKey(transactionMessage.Id))
+                await DeleteTransaction(transactionMessage.Id);
+
             string transactionMessageJson = JsonSerializer.Serialize(transactionMessage);
             var response = await queueClient.SendMessageAsync(transactionMessageJson,
                                                               visibilityTimeout:TimeSpan.FromSeconds(0),
