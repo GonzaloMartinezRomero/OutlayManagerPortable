@@ -31,6 +31,7 @@ namespace OutlayManagerPortableMaui.Models
             {25,new TransactionCode(){ Id=25, Code="ROPA" }},
             {26,new TransactionCode(){ Id=26, Code="HACIENDA" }},
             {27,new TransactionCode(){ Id=27, Code="FERRETERIA" }},
+            {28,new TransactionCode(){ Id=28, Code="INVERSION" }},
         };
 
         public static Dictionary<int,TransactionType> TransactionTypes { get { return transactionTypes; } }
